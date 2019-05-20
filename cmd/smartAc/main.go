@@ -12,7 +12,10 @@ func main() {
 
 	api := router.Group("/api")
 	{
-		api.GET("/devices", handlers.GetAllDevices(deviceService))
+		api.GET("/devices", handlers.Devices(deviceService))
+		api.GET("/devices/:id", handlers.Device(deviceService))
+		api.GET("/devices/find/:partialId", handlers.Find(deviceService))
+		api.POST("/devices", handlers.Register(deviceService))
 	}
 	router.Run()
 }

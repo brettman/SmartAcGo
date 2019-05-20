@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	sac "github.com/brettman/smartacgo"
+	"gopkg.in/mgo.v2"
 )
 
 // DeviceService - a mongodb impl of the DeviceService interface
 type DeviceService struct {
-	// Db *mgo.Database
-	Str string
+	Db *mgo.Database
 }
 
 // implements the DeviceService interface in root package
