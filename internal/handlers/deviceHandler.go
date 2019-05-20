@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	sac "github.com/brettman/smartacgo"
@@ -9,12 +10,13 @@ import (
 
 // Devices - get all devices
 func Devices(svc sac.DeviceService) func(c *gin.Context) {
-	// todo:  should svc param be a pointer?  having some weird build issues, but they are totally due
-	//  to my ignorance... need to figure out what the right approach is here
-
 	return func(c *gin.Context) {
-		svc.Devices()
-		c.JSON(http.StatusOK, "got some devices")
+		devices, err := svc.Devices()
+		if err != nil {
+			log.Panic(err)
+		}
+
+		c.JSON(http.StatusOK, devices)
 	}
 }
 
@@ -22,7 +24,12 @@ func Devices(svc sac.DeviceService) func(c *gin.Context) {
 func Device(svc sac.DeviceService) func(c *gin.Context) {
 
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, "got a single device")
+		id := c.Param("id")
+		device, err := svc.Device(id)
+		if err != nil {
+			log.Panic(err)
+		}
+		c.JSON(http.StatusOK, device)
 	}
 }
 
@@ -37,6 +44,15 @@ func Find(svc sac.DeviceService) func(c *gin.Context) {
 // Register - add a new device to the db
 func Register(svc sac.DeviceService) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, "posting a new device")
+		var device sac.Device
+		err := c.ShouldBindJSON(&device)
+		if err != nil {
+			log.Panic(err)
+		}
+		err = svc.Register(device)
+		if err != nil {
+			log.Panic(err)
+		}
+		c.JSON(http.StatusOK, device)
 	}
 }

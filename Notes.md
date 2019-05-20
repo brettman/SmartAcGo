@@ -18,3 +18,18 @@ I'm putting all this out in the open as a way to give back and share.  I really 
 I generally spend a lot of time thinking about project structures.  In my experience, the way your project is laid out can have a significant impact on the long term extensibility and useability of the project.  I'm a stickler for organisation in code projects and believe that everything confers semantic value.  File and folder names are only the beginning, but they are an important place to start.  With a .net project I know enough to have an informed opinion about smart ways to structure things.  I guess I know enough to feel confident defending controversial positions (look at the C# version of this prototype) and also adapt easily to new ways of doing things.  With golang... well, not so much.  I'm still kind of in the phase of typing stuff in verbatim from tutorials, or maybe just beyond that. 
 
 That said, concepts like testability, separation of concerns, SOLID principles and semantic clarity are univeral concepts which go beyond the syntactical and task oriented focus of most tutorials.  Figuring out some of that additional stuff is what this project is about.  With golang and google, you can really get a sample project up and running (and possibly even deployed to GCP) in just a few hours, even if you're new.  But I want the project to make sense so we have to go deeper. 
+
+Now, this is why I like golang, because there is always some guidance out there and it never takes too long to find.  I spent several days haranging internally about how to layout the handlers, database adapters, configs, etc.  Then I *finally* started googling and found (without too much surprise) that all this stuff has been dealt with in the public sphere.  For now I'm just going to drop some links and let other people who are much smarter than me do the talking.  For this project I'll follow the [Standard Go Project Layout] (https://github.com/golang-standards/project-layout).  Ben Jonson has written some good articles on this topic as well:
+- [Standard Package Layout] (https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1)
+- [Building WTF Dial] (https://medium.com/wtf-dial/wtf-dial-domain-model-9655cd523182)
+
+### Building the code
+This is probably a good place to admit that after I found the cool new project structure it took me at least a couple hours of messing around to figure out how to build it. Having your executables (main) defined in the /cmd subdirectory makes perfect sense, but I had a hell of time getting all my import paths to work.  I'm not sure if I was just too tired (it was after midnight) or if it is actually a pain in the a** in general.  Anyway I eventually got all the pacakge refs worked out and a build command which does the trick...
+```
+go build -o smartAc ./cmd/smartAc/main.go
+```
+
+I'm not going to say any more about it, but I'd welcome suggestions on this point.  This seems to work, but I haven't much clue if I'm doing it right.  Perhaps it will be the topic of another blog post sometime.  
+
+
+## Database
