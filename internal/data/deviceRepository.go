@@ -13,7 +13,11 @@ type DeviceService struct {
 	Db *mgo.Database
 }
 
-// implements the DeviceService interface in root package
+func NewDeviceService(db *mgo.Database) *DeviceService {
+	return &DeviceService{
+		db,
+		}
+}
 
 // Device - get a single device by serial nr
 func (s *DeviceService) Device(serialNr string) (sac.Device, error) {
@@ -23,7 +27,7 @@ func (s *DeviceService) Device(serialNr string) (sac.Device, error) {
 // Devices - get all Devices
 func (s *DeviceService) Devices() ([]sac.Device, error) {
 	devices := []sac.Device{}
-	err := s.Db.C("smartac").Find(bson.M{}).All(&devices)
+	err := s.Db.C("devices").Find(bson.M{}).All(&devices)
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +36,7 @@ func (s *DeviceService) Devices() ([]sac.Device, error) {
 
 // Register - add a new device
 func (s *DeviceService) Register(device sac.Device) error {
-	err := s.Db.C("smartac").Insert(&device)
+	err := s.Db.C("devices").Insert(&device)
 	if err != nil {
 		log.Panic(err)
 	}

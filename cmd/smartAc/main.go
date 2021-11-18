@@ -9,7 +9,13 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-func main() {
+// App - Basic application info
+type App struct {
+	Name string
+	Version string
+}
+
+func (app *App) Run() error{
 	router := gin.Default()
 
 	session, err := mgo.Dial("localhost")
@@ -18,7 +24,9 @@ func main() {
 	}
 	db := session.DB("smartac")
 
-	deviceService := &data.DeviceService{Db: db}
+	//deviceService := &data.DeviceService{Db: db}
+	deviceService:= data.NewDeviceService(db)
+
 	api := router.Group("/api")
 	{
 		api.GET("/devices", handlers.Devices(deviceService))
@@ -27,4 +35,19 @@ func main() {
 		api.POST("/devices", handlers.Register(deviceService))
 	}
 	router.Run()
+
+	return nil
+}
+
+func main() {
+	app:= &App{
+		Name: "SmartAcApp",
+		Version: ".0.0.1",
+	}
+
+	if err:= app.Run(); err != nil{
+		log.Fatal("Error starting app")
+		panic(app)
+	}
+
 }
