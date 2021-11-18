@@ -1,33 +1,39 @@
 package data
 
 import (
+	"fmt"
+	"github.com/brettman/smartAcGo/internal/device"
 	"log"
 
-	sac "github.com/brettman/smartacgo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 // DeviceService - a mongodb impl of the DeviceService interface
-type DeviceService struct {
-	Db *mgo.Database
+type deviceRepository struct {
+	db *mgo.Database
 }
 
-func NewDeviceService(db *mgo.Database) *DeviceService {
-	return &DeviceService{
+// NewDeviceServiceMongo - returns an mongodb specific implementation of the device.DeviceService interface
+func NewDeviceServiceMongo(db *mgo.Database) device.DeviceService{
+	return &deviceRepository{
 		db,
 		}
 }
 
 // Device - get a single device by serial nr
-func (s *DeviceService) Device(serialNr string) (sac.Device, error) {
-	return sac.Device{}, nil
+func (s *deviceRepository) Device(serialNr string) (device.Device, error) {
+	var device device.Device
+	err := s.db.C("devices").Find(bson.M{"serialnr": serialNr}).One(&device); if err != nil {
+		fmt.Printf("Serialnr %s: %s\n", serialNr, err)
+	}
+	return device, nil
 }
 
 // Devices - get all Devices
-func (s *DeviceService) Devices() ([]sac.Device, error) {
-	devices := []sac.Device{}
-	err := s.Db.C("devices").Find(bson.M{}).All(&devices)
+func (s *deviceRepository) Devices() ([]device.Device, error) {
+	var devices []device.Device
+	err := s.db.C("devices").Find(bson.M{}).All(&devices)
 	if err != nil {
 		panic(err)
 	}
@@ -35,8 +41,8 @@ func (s *DeviceService) Devices() ([]sac.Device, error) {
 }
 
 // Register - add a new device
-func (s *DeviceService) Register(device sac.Device) error {
-	err := s.Db.C("devices").Insert(&device)
+func (s *deviceRepository) Register(device device.Device) error {
+	err := s.db.C("devices").Insert(&device)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -44,6 +50,6 @@ func (s *DeviceService) Register(device sac.Device) error {
 }
 
 // Find - find all devices using a partial starting value for serialNr
-func (s *DeviceService) Find(partialSerialnr string) ([]sac.Device, error) {
+func (s *deviceRepository) Find(partialSerialnr string) ([]device.Device, error) {
 	return nil, nil
 }

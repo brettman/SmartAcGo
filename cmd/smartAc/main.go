@@ -1,11 +1,10 @@
 package main
 
 import (
+	"github.com/brettman/smartAcGo/internal/transport/http"
 	"log"
 
 	"github.com/brettman/smartAcGo/internal/data"
-	"github.com/brettman/smartAcGo/internal/handlers"
-	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 )
 
@@ -16,7 +15,6 @@ type App struct {
 }
 
 func (app *App) Run() error{
-	router := gin.Default()
 
 	session, err := mgo.Dial("localhost")
 	if err != nil {
@@ -24,17 +22,9 @@ func (app *App) Run() error{
 	}
 	db := session.DB("smartac")
 
-	//deviceService := &data.DeviceService{Db: db}
-	deviceService:= data.NewDeviceService(db)
-
-	api := router.Group("/api")
-	{
-		api.GET("/devices", handlers.Devices(deviceService))
-		api.GET("/devices/:id", handlers.Device(deviceService))
-		//api.GET("/devices/find/:partialId", handlers.Find(deviceService))
-		api.POST("/devices", handlers.Register(deviceService))
-	}
-	router.Run()
+	devService:= data.NewDeviceServiceMongo(db)
+	handler := http.NewDeviceHandler(devService)
+	handler.SetupRoutes()
 
 	return nil
 }
