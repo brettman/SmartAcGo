@@ -9,8 +9,7 @@ import (
 )
 
 // DeviceHandler - http handler methods for device operations
-type DeviceHandler struct{
-
+type DeviceHandler struct {
 	DeviceService device.DeviceService
 }
 
@@ -19,20 +18,28 @@ func NewDeviceHandler(deviceService device.DeviceService) *DeviceHandler {
 	return &DeviceHandler{DeviceService: deviceService}
 }
 
-func (handler *DeviceHandler) SetupRoutes() error{
+// SetupRoutes - Setup device routes
+func (handler *DeviceHandler) SetupRoutes() error {
 	router := gin.Default()
 	api := router.Group("/api")
 	{
-		api.GET("/devices", handler.Devices)
-		api.GET("/devices/:serialNr", handler.Device)
 		api.POST("/devices", handler.Register)
 	}
+	adminApi := router.Group("/api/admin")
+	{
+		adminApi.GET("/devices", handler.Devices)
+		adminApi.GET("/devices/:serialNr", handler.Device)
+	}
 
-	router.Run()
+	err := router.Run()
+	if err != nil {
+		log.Panic(err)
+	}
 	return nil
 }
 
-func(h *DeviceHandler) Devices(c *gin.Context) {
+// Devices - get all devices
+func (h *DeviceHandler) Devices(c *gin.Context) {
 	log.Println("we're in the new method")
 	devices, err := h.DeviceService.Devices()
 	if err != nil {
@@ -42,26 +49,28 @@ func(h *DeviceHandler) Devices(c *gin.Context) {
 	c.JSON(http.StatusOK, devices)
 }
 
-func(h *DeviceHandler) Device(c *gin.Context){
+// Device - get a device by serialNr
+func (h *DeviceHandler) Device(c *gin.Context) {
 	id := c.Param("serialNr")
-	device, err := h.DeviceService.Device(id); if err !=nil {
+	acdevice, err := h.DeviceService.Device(id)
+	if err != nil {
 		log.Panic(err)
 	}
-	c.JSON(http.StatusOK, device)
+	c.JSON(http.StatusOK, acdevice)
 }
 
 // Register - add a new device to the db
-func(h *DeviceHandler) Register(c *gin.Context){
+func (h *DeviceHandler) Register(c *gin.Context) {
 
-	var device device.Device
-	err := c.ShouldBindJSON(&device)
-	device.RegistrationDate = time.Now()
+	var acdevice device.Device
+	err := c.ShouldBindJSON(&acdevice)
+	acdevice.RegistrationDate = time.Now()
 	if err != nil {
 		log.Panic(err)
 	}
-	err = h.DeviceService.Register(device)
+	err = h.DeviceService.Register(acdevice)
 	if err != nil {
 		log.Panic(err)
 	}
-	c.JSON(http.StatusOK, device)
+	c.JSON(http.StatusOK, acdevice)
 }
