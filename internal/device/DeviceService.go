@@ -8,4 +8,7 @@ type DeviceService interface {
 	Find(partialSerialnr string) ([]Device, error)
 }
 
-
+type SensorLogEntryService interface {
+	Update(serialNr string, entry SensorLogEntry) error
+	UpdateBulk(serialNr string, entires []SensorLogEntry) error
+}
