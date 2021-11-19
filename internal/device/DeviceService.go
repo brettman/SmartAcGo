@@ -6,9 +6,5 @@ type DeviceService interface {
 	Devices() ([]Device, error)
 	Register(d Device) error
 	Find(partialSerialnr string) ([]Device, error)
-}
-
-type SensorLogEntryService interface {
-	Update(serialNr string, entry SensorLogEntry) error
-	UpdateBulk(serialNr string, entires []SensorLogEntry) error
+	AddSensorData(serialNr string, entries []SensorLogEntry) error
 }

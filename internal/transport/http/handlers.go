@@ -24,6 +24,7 @@ func (handler *DeviceHandler) SetupRoutes() error {
 	api := router.Group("/api")
 	{
 		api.POST("/devices", handler.Register)
+		api.POST("/devices/:serialNr/sensordata", handler.SensorData)
 	}
 	adminApi := router.Group("/api/admin")
 	{
@@ -62,15 +63,30 @@ func (h *DeviceHandler) Device(c *gin.Context) {
 // Register - add a new device to the db
 func (h *DeviceHandler) Register(c *gin.Context) {
 
-	var acdevice device.Device
-	err := c.ShouldBindJSON(&acdevice)
-	acdevice.RegistrationDate = time.Now()
+	var acDevice device.Device
+
+	// todo: handle deserialization errors
+	err := c.ShouldBindJSON(&acDevice)
+	acDevice.RegistrationDate = time.Now()
 	if err != nil {
 		log.Panic(err)
 	}
-	err = h.DeviceService.Register(acdevice)
+	err = h.DeviceService.Register(acDevice)
 	if err != nil {
 		log.Panic(err)
 	}
-	c.JSON(http.StatusOK, acdevice)
+	c.JSON(http.StatusOK, acDevice)
+}
+
+func (h *DeviceHandler) SensorData(c *gin.Context) {
+	var id = c.Param("serialNr")
+	var sensorLogEntry []device.SensorLogEntry
+
+	err:= c.ShouldBindJSON(&sensorLogEntry); if err !=nil{
+		log.Println("invalid sensor data received")
+		log.Println(err)
+		err := h.DeviceService.AddSensorData(id, sensorLogEntry);if err!=nil{
+			log.Panic(err)
+		}
+	}
 }

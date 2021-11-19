@@ -14,11 +14,30 @@ type deviceRepository struct {
 	db *mgo.Database
 }
 
+
 // NewDeviceServiceMongo - returns an mongodb specific implementation of the device.DeviceService interface
 func NewDeviceServiceMongo(db *mgo.Database) device.DeviceService{
 	return &deviceRepository{
 		db,
 		}
+}
+
+// AddSensorData - update a device's sensordata log
+func (s *deviceRepository) AddSensorData(serialNr string, entries []device.SensorLogEntry) error {
+	var acDevice device.Device
+	err := s.db.C("devices").Find(bson.M{"serialnr": serialNr}).One(&acDevice); if err != nil {
+		fmt.Printf("Serialnr %s: %s\n", serialNr, err)
+		return err
+	}
+	if acDevice.SensorLogs == nil {
+		acDevice.SensorLogs = []device.SensorLogEntry{}
+	}
+	acDevice.SensorLogs = append(acDevice.SensorLogs, entries...)
+	changeInfo, err :=s.db.C("devices").UpsertId(bson.M{"serialnr": acDevice.SerialNr}, acDevice); if err !=nil {
+		log.Panic(err)
+	}
+	log.Println(changeInfo)
+	return nil
 }
 
 // Device - get a single device by serial nr
