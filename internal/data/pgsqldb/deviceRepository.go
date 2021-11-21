@@ -19,7 +19,11 @@ func (d deviceRepository) Device(serialNr string) (device.Device, error) {
 }
 
 func (d deviceRepository) Devices() ([]device.Device, error) {
-	panic("implement me")
+	var devices []device.Device
+	if result:= d.DB.Find(&devices); result.Error != nil{
+		return []device.Device{}, result.Error
+	}
+	return devices, nil
 }
 
 func (d deviceRepository) Register(item device.Device) error {

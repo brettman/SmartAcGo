@@ -3,8 +3,8 @@ package pgsqldb
 import (
 	"fmt"
 	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	//log "github.com/sirupsen/logrus"
 	"os"
 )
@@ -21,6 +21,7 @@ func NewDatabase() (*gorm.DB, error){
 	sslMode:= os.Getenv("SSL_MODE")
 
 	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s", dbHost, dbPort, dbUserName, dbTable, dbPassword, sslMode)
+	//fmt.Println(connectionString)
 	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 	if err !=nil{
 		fmt.Printf("Error opening new database connection: %s\n", connectionString)

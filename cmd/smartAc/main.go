@@ -32,6 +32,7 @@ func (app *App) Run() error{
 	db , err:= pgsqldb.NewDatabase(); if err != nil{
 		panic(err)
 	}
+	pgsqldb.MigrateDB(db)
 
 	devService:= pgsqldb.NewDeviceServicePG(db)
 	handler := http.NewDeviceHandler(devService)
