@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"github.com/brettman/smartAcGo/internal/device"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -53,6 +54,7 @@ func (h *DeviceHandler) Devices(c *gin.Context) {
 // Device - get a device by serialNr
 func (h *DeviceHandler) Device(c *gin.Context) {
 	id := c.Param("serialNr")
+	fmt.Println(id)
 	acdevice, err := h.DeviceService.Device(id)
 	if err != nil {
 		log.Panic(err)
@@ -71,7 +73,7 @@ func (h *DeviceHandler) Register(c *gin.Context) {
 	if err != nil {
 		log.Panic(err)
 	}
-	err = h.DeviceService.Register(acDevice)
+	_, err = h.DeviceService.Register(acDevice)
 	if err != nil {
 		log.Panic(err)
 	}

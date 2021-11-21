@@ -60,12 +60,12 @@ func (s *deviceRepository) Devices() ([]device.Device, error) {
 }
 
 // Register - add a new device
-func (s *deviceRepository) Register(device device.Device) error {
+func (s *deviceRepository) Register(device device.Device) (device.Device, error) {
 	err := s.db.C("devices").Insert(&device)
 	if err != nil {
 		log.Panic(err)
 	}
-	return err
+	return device, err
 }
 
 // Find - find all devices using a partial starting value for serialNr

@@ -15,7 +15,11 @@ func NewDeviceServicePG(DB *gorm.DB) device.DeviceService {
 }
 
 func (d deviceRepository) Device(serialNr string) (device.Device, error) {
-	panic("implement me")
+	var item device.Device
+	if result:=d.DB.First(&item, "serial_nr = ? ", serialNr); result.Error !=nil{
+		return device.Device{}, result.Error
+	}
+	return item, nil
 }
 
 func (d deviceRepository) Devices() ([]device.Device, error) {
@@ -26,8 +30,11 @@ func (d deviceRepository) Devices() ([]device.Device, error) {
 	return devices, nil
 }
 
-func (d deviceRepository) Register(item device.Device) error {
-	panic("implement me")
+func (d deviceRepository) Register(item device.Device) (device.Device, error) {
+	if result := d.DB.Save(item); result.Error != nil{
+		return device.Device{}, result.Error
+	}
+	return item, nil
 }
 
 func (d deviceRepository) Find(partialSerialnr string) ([]device.Device, error) {
