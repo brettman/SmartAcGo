@@ -1,6 +1,7 @@
 package device
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type Device struct {
 }
 
 type SensorLogEntry struct {
+	gorm.Model
 	SerialNr string
 	Temperature  float32
 	Humidity     float32

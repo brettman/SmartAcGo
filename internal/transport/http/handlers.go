@@ -31,6 +31,7 @@ func (handler *DeviceHandler) SetupRoutes() error {
 	{
 		adminApi.GET("/devices", handler.Devices)
 		adminApi.GET("/devices/:serialNr", handler.Device)
+		adminApi.GET("/devices/search/:partialSerialNr", handler.SearchDevice)
 	}
 
 	err := router.Run()
@@ -62,6 +63,17 @@ func (h *DeviceHandler) Device(c *gin.Context) {
 	c.JSON(http.StatusOK, acdevice)
 }
 
+func (h *DeviceHandler) SearchDevice(c *gin.Context) {
+	id := c.Param("partialSerialNr")
+	fmt.Println(id)
+	acdevice, err := h.DeviceService.Find(id)
+	if err != nil {
+		log.Panic(err)
+	}
+	c.JSON(http.StatusOK, acdevice)
+
+}
+
 // Register - add a new device to the db
 func (h *DeviceHandler) Register(c *gin.Context) {
 
@@ -82,13 +94,14 @@ func (h *DeviceHandler) Register(c *gin.Context) {
 
 func (h *DeviceHandler) SensorData(c *gin.Context) {
 	var id = c.Param("serialNr")
+	fmt.Printf("yo we here... the id is: %s\n", id)
 	var sensorLogEntry []device.SensorLogEntry
 
 	err:= c.ShouldBindJSON(&sensorLogEntry); if err !=nil{
 		log.Println("invalid sensor data received")
 		log.Println(err)
-		err := h.DeviceService.AddSensorData(id, sensorLogEntry);if err!=nil{
-			log.Panic(err)
-		}
+	}
+	err = h.DeviceService.AddSensorData(id, sensorLogEntry);if err!=nil{
+		log.Panic(err)
 	}
 }
