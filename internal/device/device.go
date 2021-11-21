@@ -4,7 +4,7 @@ import "time"
 
 // Device - an air conditioner which will submit data readings
 type Device struct {
-	SerialNr         string `bson:"serialnr"`
+	SerialNr         string
 	FirmwareVersion  string
 	RegistrationDate time.Time
 	SensorLogs       []SensorLogEntry

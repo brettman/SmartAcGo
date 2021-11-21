@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/brettman/smartAcGo/internal/data/pgsqldb"
 	"github.com/brettman/smartAcGo/internal/transport/http"
 	"log"
 
-	"github.com/brettman/smartAcGo/internal/data"
 	"gopkg.in/mgo.v2"
 )
 
@@ -14,15 +14,26 @@ type App struct {
 	Version string
 }
 
-func (app *App) Run() error{
-
+func OpenMongoDb() (*mgo.Database, error){
 	session, err := mgo.Dial("localhost")
 	if err != nil {
 		log.Panic(err)
 	}
 	db := session.DB("smartac")
 
-	devService:= data.NewDeviceServiceMongo(db)
+	return db, nil
+}
+
+func (app *App) Run() error{
+
+	//db, _ := OpenMongoDb()
+	//devService:= mongodb.NewDeviceServiceMongo(db)
+
+	db , err:= pgsqldb.NewDatabase(); if err != nil{
+		panic(err)
+	}
+
+	devService:= pgsqldb.NewDeviceServicePG(db)
 	handler := http.NewDeviceHandler(devService)
 	handler.SetupRoutes()
 
